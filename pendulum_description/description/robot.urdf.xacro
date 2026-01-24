@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="pendulum">
   <xacro:include filename="inertial_macros.xacro" />
+  <xacro:include filename="gazebo.xacro" />
 
   <link name="base_link">
     <visual>
       <origin xyz="0.0 0.0 0.025" />
       <geometry>
-        <box size="0.1 0.1 0.05" />
+        <box size="0.1 0.25 0.05" />
       </geometry>
       <material name="gray">
         <color rgba="0.5 0.5 0.5 1" />
@@ -18,7 +19,7 @@
         <box size="0.1 0.1 0.05" />
       </geometry>
     </collision>
-    <xacro:inertial_box mass="2.0" x="0.1" y="0.1" z="0.1">
+    <xacro:inertial_box mass="5.0" x="0.1" y="0.25" z="0.05">
       <origin xyz="0 0 0.025" />
     </xacro:inertial_box>
   </link>
