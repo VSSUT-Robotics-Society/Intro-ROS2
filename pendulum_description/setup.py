@@ -1,6 +1,7 @@
 from setuptools import find_packages, setup
 import os
 
+# Modify if your package name is different
 package_name = 'pendulum_description'
 
 package_dir = os.path.dirname(__file__)
