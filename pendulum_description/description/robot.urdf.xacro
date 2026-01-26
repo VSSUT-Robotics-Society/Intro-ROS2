@@ -4,6 +4,7 @@
   <xacro:include filename="gazebo.xacro" />
 
   <link name="base_link">
+
     <visual>
       <origin xyz="0.0 0.0 0.025" />
       <geometry>
@@ -13,39 +14,46 @@
         <color rgba="0.5 0.5 0.5 1" />
       </material>
     </visual>
+
     <collision>
       <origin xyz="0.0 0.0 0.025" />
       <geometry>
         <box size="0.1 0.1 0.05" />
       </geometry>
     </collision>
+
     <xacro:inertial_box mass="5.0" x="0.1" y="0.25" z="0.05">
       <origin xyz="0 0 0.025" />
     </xacro:inertial_box>
   </link>
 
+
   <joint name="base_joint" type="continuous">
     <parent link="base_link" />
     <child link="pendulum_arm" />
-    <origin xyz="0 0 0.35" />
+    <origin xyz="0 0 0.5" />
   </joint>
 
+
   <link name="pendulum_arm">
+
     <visual>
-      <origin xyz="0.0 0.0 -0.1" />
+      <origin xyz="0.0 0.0 -0.15" />
       <geometry>
-        <cylinder radius="0.02" length="0.2" />
+        <box size="0.015 0.015 0.305" />
       </geometry>
-      <material name="blue">
-        <color rgba="0 0 1 1" />
+      <material name="grey">
+        <color rgba="0.3 0.3 0.3 1" />
       </material>
     </visual>
+
     <collision>
-      <origin xyz="0.0 0.0 -0.1" />
+      <origin xyz="0.0 0.0 -0.3" />
       <geometry>
-        <cylinder radius="0.02" length="0.2" />
+        <box size="0.015 0.015 0.305" />
       </geometry>
     </collision>
+
     <xacro:inertial_cylinder mass="0.5" radius="0.02" length="0.2">
       <origin xyz="0.0 0.0 -0.1" />
     </xacro:inertial_cylinder>
@@ -54,23 +62,26 @@
   <joint name="arm_to_bob" type="fixed">
     <parent link="pendulum_arm" />
     <child link="pendulum_bob" />
-    <origin xyz="0 0 -0.2" />
+    <origin xyz="0 0 -0.325" />
   </joint>
 
   <link name="pendulum_bob">
+
     <visual>
       <geometry>
-        <sphere radius="0.05" />
+        <sphere radius="0.025" />
       </geometry>
-      <material name="red">
-        <color rgba="1 0 0 1" />
+      <material name="orange">
+        <color rgba="1 0.25 0 1" />
       </material>
     </visual>
+
     <collision>
       <geometry>
         <sphere radius="0.05" />
       </geometry>
     </collision>
+
     <xacro:inertial_sphere mass="1.0" radius="0.05">
       <origin xyz="0 0 0" />
     </xacro:inertial_sphere>
