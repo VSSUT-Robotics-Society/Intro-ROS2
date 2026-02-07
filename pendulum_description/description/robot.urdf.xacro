@@ -2,6 +2,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="pendulum">
   <xacro:include filename="inertial_macros.xacro" />
   <xacro:include filename="gazebo.xacro" />
+  <xacro:include filename="ros2_control.xacro" />
 
   <link name="base_link">
     <visual>
@@ -76,10 +77,13 @@
     </xacro:inertial_box>
   </link>
 
+  <!-- Stepper moves this joint -->
   <joint name="shaft_joint" type="continuous">
     <parent link="motor_link" />
     <child link="shaft_link" />
     <origin xyz="0 0 0.055" rpy="0.0 ${pi/2} 0.0" />
+    <limit effort="2.0" velocity="6.0" />
+    <dynamics damping="0.1" friction="0.01" />
   </joint>
 
   <link name="shaft_link">
@@ -101,10 +105,12 @@
     </xacro:inertial_box>
   </link>
 
+  <!-- Encoder reads this joint -->
   <joint name="pendulum_joint" type="continuous">
     <parent link="shaft_link" />
     <child link="pendulum_arm" />
-    <origin xyz="0 0 -0.25" rpy="0.0 ${-pi/2} 0.0" />
+    <origin xyz="0 0 -0.25" rpy="0.0 ${-pi/2} ${pi}" />
+    <dynamics damping="0.05" friction="0.001" />
   </joint>
 
   <link name="pendulum_arm">
