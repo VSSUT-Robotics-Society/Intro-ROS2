@@ -1,0 +1,10 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+    stepper:
+      type: "effort_controllers/JointGroupEffortController"
+
+stepper:
+  ros__parameters:
+    joints:
+      - shaft_joint

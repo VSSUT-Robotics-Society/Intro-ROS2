@@ -74,7 +74,7 @@ def generate_launch_description():
         create_own_container=False,  # Don't create container (standalone node)
         use_composition=False,       # Run as standalone node, not composed
         use_respawn=False,          # Don't respawn on crash
-        log_level='info'            # Info-level logging for bridge diagnostics
+        log_level='info',            # Info-level logging for bridge diagnostics
         # Note: extra_bridge_params can be added here if additional runtime params needed
     )
 
