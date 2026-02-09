@@ -10,7 +10,10 @@ def generate_launch_description():
         executable='create',
         arguments=['-topic', '/robot_description',
                    '-name', 'Pendulum'],
-        output='screen'
+        output='screen',
+        parameters=[{
+            'use_sim_time': True
+        }]
     )
 
     # ros2_control spawners
@@ -18,7 +21,10 @@ def generate_launch_description():
         package='controller_manager',
         executable='spawner',
         arguments=['stepper'],
-        output='screen'
+        output='screen',
+        parameters=[{
+            'use_sim_time': True
+        }]
     )
 
     return LaunchDescription([

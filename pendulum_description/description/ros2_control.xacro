@@ -7,7 +7,7 @@
 
     <!-- One Joint - Stepper -->
     <joint name="shaft_joint">
-      <command_interface name="position" />
+      <command_interface name="effort" />
     </joint>
   </ros2_control>
 </robot>

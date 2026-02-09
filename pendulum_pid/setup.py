@@ -25,6 +25,7 @@ setup(
     entry_points={
         'console_scripts': [
             'pid_controller_node = pendulum_pid.pid_node:main',
+            'test_motor_node = pendulum_pid.test_motor:main',
         ],
     },
 )

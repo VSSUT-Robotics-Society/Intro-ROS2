@@ -75,8 +75,19 @@ def generate_launch_description():
         create_own_container=False,  # Don't create container (standalone node)
         use_composition=False,       # Run as standalone node, not composed
         use_respawn=False,          # Don't respawn on crash
-        log_level='info'            # Info-level logging for bridge diagnostics
+        log_level='info',            # Info-level logging for bridge diagnostics
         # Note: extra_bridge_params can be added here if additional runtime params needed
+    )
+
+    # Launch the bot (included as separate launch file for reusability)
+    bot_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([
+                sim_pkg,
+                'launch',
+                'spawn_entity.launch.py'
+            ])
+        )
     )
 
     # Launch!
@@ -87,5 +98,6 @@ def generate_launch_description():
         # Actions
         desc_file,
         gz_sim_launch,
-        ros_gz_bridge
+        ros_gz_bridge,
+        bot_launch
     ])
