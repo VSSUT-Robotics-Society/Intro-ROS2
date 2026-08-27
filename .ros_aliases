@@ -1,0 +1,163 @@
+# --- ROS2 aliases ---
+alias tele_keybd='ros2 run teleop_twist_keyboard teleop_twist_keyboard'
+alias teleop='tele_keybd'
+alias src='source install/setup.bash'
+alias topics='ros2 topic list'
+alias nodes='ros2 node list'
+alias ctrllers='ros2 control list_controllers'
+alias control='ctrllers'
+alias hrdware='ros2 control list_hardware_interfaces'
+alias hardware='hrdware'
+alias ros_reboot='ros2 daemon stop && ros2 daemon start'
+alias gz_reboot='pkill -9 -f "gz sim server"; pkill -9 -f "gz sim gui"; pkill -9 -f "gz sim"'
+
+# --- Functions ---
+# -----------------
+
+# ROS2 safe build
+build() {
+    # Check for src/ directory
+    if [ ! -d "./src" ]; then
+        echo "You're not in a ROS2 workspace root (missing ./src)."
+        read -p "Proceed anyway? [y/N] " choice
+        case "$choice" in 
+            y|Y ) echo "→ Proceeding outside workspace...";;
+            * ) echo "Aborted."; return 1;;
+        esac
+    fi
+
+    # Clean previous builds
+    echo "Cleaning previous build artifacts (build/, install/, log/)..."
+    rm -rf build/ install/ log/
+
+    # Remove common leftover caches
+    find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null
+    find . -type f -name "*.pyc" -delete 2>/dev/null
+
+    echo "Workspace cleaned."
+
+    # Rebuild now
+    echo "Starting fresh build..."
+    colcon build --symlink-install
+
+    # Re-Source new files
+    if [ -f "install/setup.bash" ]; then
+        echo "Sourcing newly built workspace..."
+        source install/setup.bash
+    else
+        echo "Build failed or install/setup.bash not found."
+        return 1
+    fi
+}
+
+# Interactive ROS2 Package Creator
+rospkg() {
+    # Source ROS2 if present
+    if [ -z "$ROS_DISTRO" ]; then
+        if [ -f "/opt/ros/humble/setup.bash" ]; then
+            echo "→ ROS2 not sourced. Sourcing /opt/ros/humble/setup.bash..."
+            source /opt/ros/humble/setup.bash
+        else
+            echo "ROS2 Humble not found in /opt/ros/humble."
+            echo "Please source your ROS2 installation manually."
+            return 1
+        fi
+    fi
+
+    # Offer placing pkg within src/ if present
+    in_src=false
+    if [ "$(basename "$PWD")" == "src" ]; then
+        in_src=true
+    elif [ -d "./src" ]; then
+        echo "Detected src/ folder in current directory."
+        read -p "Create package inside ./src automatically? [Y/n] " auto_choice
+        case "$auto_choice" in
+            n|N ) echo "→ Will create package here (notin src/).";;
+            * ) echo "→ Switching to ./src for package creation."; cd src || { echo "Failed to enter ./src"; return 1; }; in_src=true;;
+        esac
+    else
+        echo "No src/ folder found here."
+        read -p "Proceed and create package in current directory? [y/N] " choice
+        case "$choice" in
+            y|Y ) echo "→ Creating package in current directory...";;
+            * ) echo "Aborted."; return 1;;
+        esac
+    fi
+
+    # Params pass-through if present
+    if [ $# -gt 0 ]; then
+        ros2 pkg create "$@"
+        return $?
+    fi
+
+    echo "Interactive ROS2 Package Creator"
+
+    # Required fields
+    read -p "Package name: " pkg_name
+    if [ -z "$pkg_name" ]; then
+        echo "Package name cannot be empty."
+        return 1
+    fi
+
+    echo "Build type:"
+    echo "  1) ament_cmake (default)"
+    echo "  2) ament_python"
+    echo "  3) cmake"
+    read -p "Choose [1-3, default 1]: " bt_choice
+    case "$bt_choice" in
+        2) build_type="ament_python";;
+        3) build_type="cmake";;
+        *) build_type="ament_cmake";;
+    esac
+
+    # Optionals
+    read -p "Do you want to configure optional fields? [y/N] " opt_choice
+    if [[ "$opt_choice" =~ ^[yY]$ ]]; then
+        read -p "Dependencies (space-separated, blank =none): " deps
+        read -p "Maintainer name (leave blank for default): " maint_name
+        read -p "Maintainer email (leave blank for default): " maint_email
+        read -p "License (leave blank for default): " license
+        read -p "Description (leave blank for default):" description
+        read -p "Node name (create default executable) [blank = none]: " node_name
+        read -p "Library name (create library template)[blank = none]: " lib_name
+        read -p "Package format (2 or 3) [default: 3]: " pkg_fmt
+        pkg_fmt=${pkg_fmt:-3}
+    else
+        deps=""
+        maint_name=""
+        maint_email=""
+        license=""
+        description=""
+        node_name=""
+        lib_name=""
+        pkg_fmt="3"
+    fi
+
+    # Final command to be sent
+    cmd=(ros2 pkg create)
+    cmd+=(--build-type "$build_type")
+    cmd+=(--package-format "$pkg_fmt")
+
+    [ -n "$description" ] && cmd+=(--description "$description")
+    [ -n "$license" ]       && cmd+=(--license "$license")
+    [ -n "$maint_name" ]    && cmd+=(--maintainer-name "$maint_name")
+    [ -n "$maint_email" ]   && cmd+=(--maintainer-email"$maint_email")
+
+    if [ -n "$deps" ]; then
+        for d in $deps; do
+            cmd+=(--dependencies "$d")
+        done
+    fi
+    [ -n "$node_name" ] && cmd+=(--node-name "$node_name")
+    [ -n "$lib_name" ] && cmd+=(--library-name "$lib_name")
+
+    cmd+=("$pkg_name")
+
+    echo "→ Running: ${cmd[*]}"
+    "${cmd[@]}"
+
+    # Restore dir if changed
+    if $in_src && [ "$(basename "$PWD")" = "src" ]; then
+        cd ..
+    fi
+}
