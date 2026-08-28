@@ -16,8 +16,11 @@
   </xacro:macro>
 
 
-  <xacro:macro name="inertial_box" params="mass x y z *origin">
+  <xacro:macro name="inertial_box" params="mass size *origin">
     <inertial>
+      <xacro:property name="x" value="${size.split(' ')[0]}" />
+      <xacro:property name="y" value="${size.split(' ')[1]}" />
+      <xacro:property name="z" value="${size.split(' ')[2]}" />
       <xacro:insert_block name="origin" />
       <mass value="${mass}" />
       <inertia ixx="${(1/12) * mass * (y*y+z*z)}" ixy="0.0" ixz="0.0"

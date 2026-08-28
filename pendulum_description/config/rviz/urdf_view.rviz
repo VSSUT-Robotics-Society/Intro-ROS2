@@ -71,6 +71,7 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+          Value: true
         pendulum_arm:
           Alpha: 1
           Show Axes: false
@@ -81,6 +82,15 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        rail_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        world:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
       Mass Properties:
         Inertia: false
         Mass: false
@@ -102,22 +112,28 @@ Visualization Manager:
           Value: true
         pendulum_bob:
           Value: true
+        rail_link:
+          Value: true
+        world:
+          Value: true
       Marker Scale: 0.75
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: true
       Tree:
-        base_link:
-          pendulum_arm:
-            pendulum_bob:
-              {}
+        world:
+          rail_link:
+            base_link:
+              pendulum_arm:
+                pendulum_bob:
+                  {}
       Update Interval: 0
       Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: base_link
+    Fixed Frame: world
     Frame Rate: 30
   Name: root
   Tools:
@@ -160,16 +176,16 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 2.0276341438293457
+      Distance: 1.3817758560180664
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
+        X: -0.06426650285720825
+        Y: -0.10699664056301117
+        Z: 0.2312132567167282
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
