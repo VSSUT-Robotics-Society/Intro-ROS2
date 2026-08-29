@@ -6,6 +6,7 @@ from ros_gz_interfaces.msg import WorldControl, WorldReset
 from std_srvs.srv import Empty
 from geometry_msgs.msg import Pose
 from sensor_msgs.msg import JointState
+from std_msgs.msg import Bool
 
 import math
 
@@ -16,8 +17,7 @@ class ResetWorldNode(Node):
 
         # Target joint and threshold settings
         self.TARGET_JOINT = 'base_joint'
-        self.THRESHOLD = math.radians(30.0)     # Absolute threshold value
-        self.is_resetting = False
+        self.THRESHOLD = math.radians(75.0)     # Absolute threshold value
 
         # Service client for Gazebo world control
         self.reset_client = self.create_client(
@@ -39,12 +39,31 @@ class ResetWorldNode(Node):
             10
         )
 
+        # Subscriber for reset commands
+        self.reset_subscription = self.create_subscription(
+            Bool,
+            '/world/reset',
+            self.reset_callback,
+            10
+        )
+
+        # Publisher for reset commands
+        self.reset_publisher = self.create_publisher(
+            Bool,
+            '/world/reset',
+            10
+        )
+        self.reset_msg = Bool()
+        # Initial state: not resetting
+        self.reset_msg.data = False
+        self.reset_publisher.publish(self.reset_msg)
+
         self.get_logger().info(
             f'Monitoring topic for threshold > {self.THRESHOLD}...')
 
     def topic_callback(self, msg: JointState):
         # Ignore incoming data if a reset operation is currently running
-        if self.is_resetting:
+        if self.reset_msg.data:
             return
 
         current_val = msg.position[msg.name.index(
@@ -57,12 +76,22 @@ class ResetWorldNode(Node):
             )
             self.execute_reset_sequence()
 
+    def reset_callback(self, msg: Bool):
+        if msg.data:
+            if not self.reset_msg.data:  # Only trigger if not already resetting
+                self.get_logger().info('External reset command received. Triggering reset...')
+                self.execute_reset_sequence()
+
     def execute_reset_sequence(self):
-        self.is_resetting = True
+        self.reset_msg.data = True
+        self.reset_publisher.publish(self.reset_msg)
 
         if not self.reset_client.wait_for_service(timeout_sec=1.0):
             self.get_logger().error('Service /world/empty/control not available!')
-            self.is_resetting = False
+
+            self.reset_msg.data = False
+            self.reset_publisher.publish(self.reset_msg)
+
             return
 
         # Prepare reset request
@@ -95,7 +124,8 @@ class ResetWorldNode(Node):
         except Exception as e:
             self.get_logger().error(f'Service call failed: {e}')
         finally:
-            self.is_resetting = False
+            self.reset_msg.data = False
+            self.reset_publisher.publish(self.reset_msg)
 
     def spawn_entity(self, entity_name: str, entity_pose: Pose = Pose()):
         cmd = [
