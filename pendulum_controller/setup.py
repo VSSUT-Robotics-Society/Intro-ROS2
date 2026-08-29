@@ -1,12 +1,13 @@
 from setuptools import find_packages, setup
 import os
 
-package_name = 'pendulum_sim'   # Modify if your package name is different
+# Modify if your package name is different
+package_name = 'pendulum_controller'
 
 package_dir = os.path.dirname(__file__)
 
 # folders under this package to include in data_files (relative to this package dir)
-selected_folders = ['launch', 'config']
+selected_folders = ['launch']
 
 # start with the existing static entries
 data_files = [
@@ -52,7 +53,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'reset_world_node = pendulum_sim.reset_node:main'
+            'test_motor_node = pendulum_controller.test_motor_node:main',
         ],
     },
 )

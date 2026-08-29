@@ -88,6 +88,15 @@ def generate_launch_description():
         # Note: extra_bridge_params can be added here if additional runtime params needed
     )
 
+    # Extra: Reset world node (optional, can be used to reset the simulation world)
+    reset_world_node = Node(
+        package='pendulum_sim',
+        executable='reset_world_node',
+        name='reset_node',
+        output='screen',
+        parameters=[{'use_sim_time': True}]
+    )
+
     # Launch!
     return LaunchDescription([
         # Arguments
@@ -98,4 +107,5 @@ def generate_launch_description():
         gz_sim_launch,
         spawn_entity,
         ros_gz_bridge,
+        # reset_world_node
     ])

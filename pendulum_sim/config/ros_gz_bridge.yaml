@@ -38,8 +38,8 @@
   direction: ROS_TO_GZ
   lazy: false
 
-## Services (unidirectional from ROS -> Gazebo)
-- ros_service_name: "/world/default/set_pose"
-  gz_service_name: "/world/default/set_pose"
-  ros_service_type: "ros_gz_interfaces/srv/SetEntityPose"
-  gz_service_type: "gz.msgs.Pose"
+## Services for controlling the simulation world
+- service_name: "/world/empty/control"
+  ros_type_name: "ros_gz_interfaces/srv/ControlWorld"
+  gz_req_type_name: "gz.msgs.WorldControl"
+  gz_rep_type_name: "gz.msgs.Boolean"
