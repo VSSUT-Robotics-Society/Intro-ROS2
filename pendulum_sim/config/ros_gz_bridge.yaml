@@ -37,3 +37,9 @@
   gz_type_name: "gz.msgs.Double"
   direction: ROS_TO_GZ
   lazy: false
+
+## Services (unidirectional from ROS -> Gazebo)
+- ros_service_name: "/world/default/set_pose"
+  gz_service_name: "/world/default/set_pose"
+  ros_service_type: "ros_gz_interfaces/srv/SetEntityPose"
+  gz_service_type: "gz.msgs.Pose"
