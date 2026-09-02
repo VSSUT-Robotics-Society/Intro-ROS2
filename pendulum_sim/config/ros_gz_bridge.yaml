@@ -22,9 +22,24 @@
 
 ## Twist Command (velocity control)
 ## BIDIRECTIONAL: allows both ROS and Gazebo to control robot velocity
-- ros_topic_name: "cmd_vel"
-  gz_topic_name: "cmd_vel"
-  ros_type_name: "geometry_msgs/msg/Twist"
-  gz_type_name: "gz.msgs.Twist"
-  direction: BIDIRECTIONAL
-  lazy: true
+# - ros_topic_name: "cmd_vel"
+#   gz_topic_name: "cmd_vel"
+#   ros_type_name: "geometry_msgs/msg/Twist"
+#   gz_type_name: "gz.msgs.Twist"
+#   direction: BIDIRECTIONAL
+#   lazy: true
+
+## Joint Command (force control)
+## UNIDIRECTIONAL: allows ROS to send joint commands to Gazebo
+- ros_topic_name: "joint_control"
+  gz_topic_name: "/model/Pendulum/joint/base_joint/cmd_force"
+  ros_type_name: "std_msgs/msg/Float64"
+  gz_type_name: "gz.msgs.Double"
+  direction: ROS_TO_GZ
+  lazy: false
+
+## Services for controlling the simulation world
+- service_name: "/world/empty/control"
+  ros_type_name: "ros_gz_interfaces/srv/ControlWorld"
+  gz_req_type_name: "gz.msgs.WorldControl"
+  gz_rep_type_name: "gz.msgs.Boolean"
