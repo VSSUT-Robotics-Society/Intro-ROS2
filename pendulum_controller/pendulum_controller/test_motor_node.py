@@ -44,12 +44,15 @@ def main(args=None):
     rclpy.init(args=args)
     test_motor_node = TestMotorNode()
 
-    # Run the test sequence directly
-    test_motor_node.run_test()
-
-    # Clean shutdown without spin()
-    test_motor_node.destroy_node()
-    rclpy.shutdown()
+    try:
+        # Run the test sequence directly
+        test_motor_node.run_test()
+    except KeyboardInterrupt:
+        print('\n[INFO] Node interrupted by user. Shutting down...')
+    finally:
+        # Clean shutdown without spin()
+        test_motor_node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':

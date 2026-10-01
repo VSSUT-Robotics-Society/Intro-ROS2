@@ -47,7 +47,7 @@ class EncoderNode(Node):
             self.serial_thread.daemon = True
             self.serial_thread.start()
         except serial.SerialException as e:
-            self.get_logger().warn(
+            self.get_logger().warning(
                 f'Failed to open serial port /dev/ttyACM0: {e}')
             self.destroy_node()
 
@@ -60,11 +60,11 @@ class EncoderNode(Node):
                     if len(data) == 2:  # 4 if yaw is not published
                         self.enc_ticks = [int(data[0])]
                     else:
-                        self.get_logger().warn(f'Invalid format: {data}')
+                        self.get_logger().warning(f'Invalid format: {data}')
                 elif data == '!':
                     self.get_logger().error('Acknowledge received during Operation!')
                 else:
-                    self.get_logger().warn(f'Invalid data: {data}')
+                    self.get_logger().warning(f'Invalid data: {data}')
             except serial.SerialException as e:
                 self.get_logger().error(f'Serial error: {e}')
                 break
@@ -90,10 +90,11 @@ def main(args=None):
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
-        pass
+        print('\n[INFO] Node interrupted by user. Shutting down...')
     finally:
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':

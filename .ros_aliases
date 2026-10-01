@@ -14,8 +14,75 @@ alias gz_reboot='pkill -9 -f "gz sim server"; pkill -9 -f "gz sim gui"; pkill -9
 # --- Functions ---
 # -----------------
 
+# Auto-source ROS2 system setup and local workspace overlay
+if [ -f "$PWD/install/setup.bash" ]; then
+    # Source ROS2 if present
+    if [ -z "$ROS_DISTRO" ]; then
+        # Find all setup.bash files in /opt/ros/
+        ros_setups=(/opt/ros/*/setup.bash)
+
+        # Filter out non-matching glob matches if /opt/ros/ is empty
+        if [ ! -f "${ros_setups[0]}" ]; then
+            ros_setups=()
+        fi
+
+        case ${#ros_setups[@]} in
+            0)
+                echo "Error: No ROS2 installation found in /opt/ros/."
+                echo "Please source your ROS2 installation manually."
+                return 1
+                ;;
+            1)
+                echo "→ ROS2 not sourced. Sourcing ${ros_setups[0]}..."
+                source "${ros_setups[0]}"
+                ;;
+            *)
+                echo "Error: Multiple ROS2 installations found in /opt/ros/:"
+                for setup in "${ros_setups[@]}"; do
+                    echo "  - $setup"
+                done
+                echo "Please source your desired ROS2 installation manually."
+                return 1
+                ;;
+        esac
+    fi
+
+    source "$PWD/install/setup.bash"
+    echo "ROS2 Workspace sourced."
+fi
 # ROS2 safe build
 build() {
+    # Source ROS2 if present
+    if [ -z "$ROS_DISTRO" ]; then
+        # Find all setup.bash files in /opt/ros/
+        ros_setups=(/opt/ros/*/setup.bash)
+
+        # Filter out non-matching glob matches if /opt/ros/ is empty
+        if [ ! -f "${ros_setups[0]}" ]; then
+            ros_setups=()
+        fi
+
+        case ${#ros_setups[@]} in
+            0)
+                echo "Error: No ROS2 installation found in /opt/ros/."
+                echo "Please source your ROS2 installation manually."
+                return 1
+                ;;
+            1)
+                echo "→ ROS2 not sourced. Sourcing ${ros_setups[0]}..."
+                source "${ros_setups[0]}"
+                ;;
+            *)
+                echo "Error: Multiple ROS2 installations found in /opt/ros/:"
+                for setup in "${ros_setups[@]}"; do
+                    echo "  - $setup"
+                done
+                echo "Please source your desired ROS2 installation manually."
+                return 1
+                ;;
+        esac
+    fi
+
     # Check for src/ directory
     if [ ! -d "./src" ]; then
         echo "You're not in a ROS2 workspace root (missing ./src)."
@@ -54,14 +121,33 @@ build() {
 rospkg() {
     # Source ROS2 if present
     if [ -z "$ROS_DISTRO" ]; then
-        if [ -f "/opt/ros/humble/setup.bash" ]; then
-            echo "→ ROS2 not sourced. Sourcing /opt/ros/humble/setup.bash..."
-            source /opt/ros/humble/setup.bash
-        else
-            echo "ROS2 Humble not found in /opt/ros/humble."
-            echo "Please source your ROS2 installation manually."
-            return 1
+        # Find all setup.bash files in /opt/ros/
+        ros_setups=(/opt/ros/*/setup.bash)
+
+        # Filter out non-matching glob matches if /opt/ros/ is empty
+        if [ ! -f "${ros_setups[0]}" ]; then
+            ros_setups=()
         fi
+
+        case ${#ros_setups[@]} in
+            0)
+                echo "Error: No ROS2 installation found in /opt/ros/."
+                echo "Please source your ROS2 installation manually."
+                return 1
+                ;;
+            1)
+                echo "→ ROS2 not sourced. Sourcing ${ros_setups[0]}..."
+                source "${ros_setups[0]}"
+                ;;
+            *)
+                echo "Error: Multiple ROS2 installations found in /opt/ros/:"
+                for setup in "${ros_setups[@]}"; do
+                    echo "  - $setup"
+                done
+                echo "Please source your desired ROS2 installation manually."
+                return 1
+                ;;
+        esac
     fi
 
     # Offer placing pkg within src/ if present

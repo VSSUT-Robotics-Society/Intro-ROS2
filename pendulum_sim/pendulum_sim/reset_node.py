@@ -71,7 +71,7 @@ class ResetWorldNode(Node):
 
         # Check threshold condition
         if abs(current_val) > self.THRESHOLD:
-            self.get_logger().warn(
+            self.get_logger().warning(
                 f'Threshold exceeded! Value: {current_val:.2f} (Limit: {self.THRESHOLD}). Triggering reset...'
             )
             self.execute_reset_sequence()
@@ -110,7 +110,7 @@ class ResetWorldNode(Node):
             rviz_future = self.rviz_reset_client.call_async(req)
             self.get_logger().info('Triggered /rviz2/reset_time service.')
         else:
-            self.get_logger().warn('/rviz2/reset_time service not available, TF warnings may persist.')
+            self.get_logger().warning('/rviz2/reset_time service not available, TF warnings may persist.')
 
     def reset_done_callback(self, future):
         try:
@@ -155,10 +155,11 @@ def main(args=None):
         # Spin keeps the node alive and processing callbacks
         rclpy.spin(node)
     except KeyboardInterrupt:
-        node.get_logger().info('Node interrupted by user. Shutting down...')
+        print('\n[INFO] Node interrupted by user. Shutting down...')
     finally:
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':

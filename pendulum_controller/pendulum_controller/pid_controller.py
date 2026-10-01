@@ -100,10 +100,13 @@ def main(args=None):
         # Spin keeps the node alive and processing callbacks
         rclpy.spin(node)
     except KeyboardInterrupt:
-        node.get_logger().info('Node interrupted by user. Shutting down...')
+        # Replaced logger with standard print to avoid frame-inspection crash during SIGINT
+        print('\n[INFO] Node interrupted by user. Shutting down...')
     finally:
         node.destroy_node()
-        rclpy.shutdown()
+        # Ensure rclpy hasn't already been shut down by another signal
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
