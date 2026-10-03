@@ -13,12 +13,12 @@
   lazy: false
 
 ## Joint states (unidirectional from Gazebo -> ROS)
-- ros_topic_name: "joint_states"
-  gz_topic_name: "joint_states"
-  ros_type_name: "sensor_msgs/msg/JointState"
-  gz_type_name: "gz.msgs.Model"
-  direction: GZ_TO_ROS
-  lazy: false
+# - ros_topic_name: "joint_states"
+#   gz_topic_name: "joint_states"
+#   ros_type_name: "sensor_msgs/msg/JointState"
+#   gz_type_name: "gz.msgs.Model"
+#   direction: GZ_TO_ROS
+#   lazy: false
 
 ## Twist Command (velocity control)
 ## BIDIRECTIONAL: allows both ROS and Gazebo to control robot velocity
@@ -31,12 +31,12 @@
 
 ## Joint Command (force control)
 ## UNIDIRECTIONAL: allows ROS to send joint commands to Gazebo
-- ros_topic_name: "joint_control"
-  gz_topic_name: "/model/Pendulum/joint/pendulum_joint/cmd_force"
-  ros_type_name: "std_msgs/msg/Float64"
-  gz_type_name: "gz.msgs.Double"
-  direction: ROS_TO_GZ
-  lazy: false
+# - ros_topic_name: "joint_control"
+#   gz_topic_name: "/model/Pendulum/joint/base_joint/cmd_force"
+#   ros_type_name: "std_msgs/msg/Float64"
+#   gz_type_name: "gz.msgs.Double"
+#   direction: ROS_TO_GZ
+#   lazy: false
 
 ## Services for controlling the simulation world
 - service_name: "/world/empty/control"

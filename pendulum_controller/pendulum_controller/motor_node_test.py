@@ -2,7 +2,7 @@ import time
 
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64MultiArray
 
 
 class MotorNodeTest(Node):
@@ -12,7 +12,7 @@ class MotorNodeTest(Node):
         super().__init__('test_motor_node')
 
         self.publisher = self.create_publisher(
-            Float64,
+            Float64MultiArray,
             '/joint_control',
             10
         )
@@ -20,24 +20,24 @@ class MotorNodeTest(Node):
         self.get_logger().info('Starting revolution test...')
 
     def run_test(self):
-        msg = Float64()
+        msg = Float64MultiArray()
 
         # Rotate forward
         for _ in range(10):
-            msg.data = 0.1
+            msg.data = [0.1]
             self.publisher.publish(msg)
             self.get_logger().info(f'Published command: {msg.data}')
             time.sleep(0.5)
 
         # Rotate backward
         for _ in range(10):
-            msg.data = -0.1
+            msg.data = [-0.1]
             self.publisher.publish(msg)
             self.get_logger().info(f'Published command: {msg.data}')
             time.sleep(0.5)
 
         # Stop
-        msg.data = 0.0
+        msg.data = [0.0]
         self.publisher.publish(msg)
         self.get_logger().info(f'Published command: {msg.data}')
         self.get_logger().info('Revolution test completed. Exiting node...')

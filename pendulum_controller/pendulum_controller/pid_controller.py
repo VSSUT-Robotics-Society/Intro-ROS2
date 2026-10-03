@@ -3,7 +3,7 @@ import math
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
-from std_msgs.msg import Bool, Float64
+from std_msgs.msg import Bool, Float64MultiArray
 
 
 class PIDControl:
@@ -70,11 +70,13 @@ class PIDController(Node):
 
         # Publisher for joint control commands
         self.publisher = self.create_publisher(
-            Float64,
+            # Float64,
+            Float64MultiArray,
             '/joint_control',
             10
         )
-        self.cmd: Float64 = Float64()    # Message to publish control commands
+        # Message to publish control commands
+        self.cmd: Float64 = Float64MultiArray()
 
         # Publisher for reset commands
         self.reset_pub = self.create_publisher(
@@ -131,7 +133,7 @@ class PIDController(Node):
             f'Error Bob: {error_bob:.4f}, Control Bob: {control_bob:.4f}')
 
         # Publish control outputs to appropriate topics
-        self.cmd.data = control_bob
+        self.cmd.data = [control_bob]
         self.publisher.publish(self.cmd)
 
     def reset_callback(self, msg: Bool) -> None:
