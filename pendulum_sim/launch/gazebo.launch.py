@@ -1,9 +1,10 @@
 from ament_index_python.packages import get_package_share_directory
+from os import path
 
 from launch_ros.actions import Node
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, SetEnvironmentVariable
 from launch.substitutions import (
     LaunchConfiguration,
     PathJoinSubstitution,
@@ -88,6 +89,28 @@ def generate_launch_description():
         # Note: extra_bridge_params can be added here if additional runtime params needed
     )
 
+    # Optional: ROS2 Controller launch
+    joint_state_broadcaster = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_state_broadcaster"],
+    )
+
+    effort_controller = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "effort_controller",
+            "--controller-ros-args",
+            "--ros-args --remap ~/commands:=/joint_control",
+        ],
+        parameters=[path.join(
+            sim_pkg,
+            "config",
+            "gz_controller.yaml"
+        )],
+    )
+
     # Launch!
     return LaunchDescription([
         # Arguments
@@ -98,4 +121,17 @@ def generate_launch_description():
         gz_sim_launch,
         spawn_entity,
         ros_gz_bridge,
+        joint_state_broadcaster,
+        effort_controller,
+
+        # Extras
+        # NVIDIA PRIME render offload
+        SetEnvironmentVariable(
+            name='__NV_PRIME_RENDER_OFFLOAD',
+            value='1'
+        ),
+        SetEnvironmentVariable(
+            name='__GLX_VENDOR_LIBRARY_NAME',
+            value='nvidia'
+        ),
     ])

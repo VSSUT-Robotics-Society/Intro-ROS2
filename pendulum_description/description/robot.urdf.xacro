@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="pendulum">
   <xacro:include filename="inertial_macros.xacro" />
-  <xacro:include filename="gazebo.xacro" />
+  <!-- <xacro:include filename="gazebo.xacro" /> -->
+  <xacro:include filename="ros2_control.xacro" />
 
   <!-- Variables -->
   <xacro:property name="pendulum_height" value="0.5" />

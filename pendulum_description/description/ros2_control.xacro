@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <ros2_control name="GzSystem" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+    <joint name="base_joint">
+      <command_interface name="effort" />
+      <state_interface name="position" />
+    </joint>
+  </ros2_control>
+  <gazebo>
+    <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin"
+      filename="libgz_ros2_control-system.so">
+      <parameters>$(find pendulum_sim)/config/gz_controller.yaml</parameters>
+      <hold_joints>false</hold_joints>
+    </plugin>
+  </gazebo>
+</robot>
