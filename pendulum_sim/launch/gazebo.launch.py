@@ -3,7 +3,7 @@ from os import path
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, SetEnvironmentVariable
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import (
     LaunchConfiguration,
@@ -129,17 +129,6 @@ def generate_launch_description():
         spawn_entity,
         ros_gz_bridge,
         joint_state_broadcaster,
-        effort_controller,
-
-        # Extras
-        # NVIDIA PRIME render offload
-        SetEnvironmentVariable(
-            name='__NV_PRIME_RENDER_OFFLOAD',
-            value='1'
-        ),
-        SetEnvironmentVariable(
-            name='__GLX_VENDOR_LIBRARY_NAME',
-            value='nvidia'
-        ),
+        effort_controller
         reset_node
     ])
