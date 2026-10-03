@@ -16,13 +16,13 @@ Quick snapshot
 
 Steps to Follow
 ---
-- [Overview](Overview.md): Why ROS2, architecture, and the big picture
-- [Concepts](Concepts.md): Nodes, topics, services, actions, packages
-- [Setup](Setup.md): Links to installers, quick Linux/WSL command notes
-- [PendulumProject](PendulumProject.md): the sample project walkthrough
-- [Exercises](Exercises.md): Short practical tasks and verification steps
-- [Troubleshooting](Troubleshooting.md): Common issues and fixes
-- [Resources](Resources.md): Official docs, tutorials and GIFs
+- [Overview](https://github.com/VSSUT-Robotics-Society/Intro-ROS2/wiki/Overview): Why ROS2, architecture, and the big picture
+- [Concepts](https://github.com/VSSUT-Robotics-Society/Intro-ROS2/wiki/Concepts): Nodes, topics, services, actions, packages
+- [Setup](https://github.com/VSSUT-Robotics-Society/Intro-ROS2/wiki/Setup): Links to installers, quick Linux/WSL command notes
+- [PendulumProject](https://github.com/VSSUT-Robotics-Society/Intro-ROS2/wiki/PendulumProject): the sample project walkthrough
+- [Exercises](https://github.com/VSSUT-Robotics-Society/Intro-ROS2/wiki/Exercises): Short practical tasks and verification steps
+- [Troubleshooting](https://github.com/VSSUT-Robotics-Society/Intro-ROS2/wiki/Troubleshooting): Common issues and fixes
+- [Resources](https://github.com/VSSUT-Robotics-Society/Intro-ROS2/wiki/Resources): Official docs, tutorials and GIFs
 
 ## How We'll Use 3 Days
 
@@ -36,4 +36,4 @@ Each page suggests short screencasts or GIFs to illustrate the commands and simu
 
 ## Next Step
 
-Open the **[Overview](Overview.md)** to get the big picture!
+Open the **[Overview](https://github.com/VSSUT-Robotics-Society/Intro-ROS2/wiki/Overview)** to get the big picture!
