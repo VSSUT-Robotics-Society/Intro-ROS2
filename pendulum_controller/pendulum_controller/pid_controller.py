@@ -1,17 +1,21 @@
+import math
+
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
-from std_msgs.msg import Float64, Bool
-
-import math
+from std_msgs.msg import Bool, Float64
 
 
 class PIDController(Node):
+    """Node class wrapping a minimal PID controller."""
+
     def __init__(self):
         super().__init__('pid_controller')
 
         # Global class for PID control
         class PIDControl:
+            """Class defining a minimal PID controller."""
+
             def __init__(self, K):
                 self.K = K  # PID gains [Kp, Ki, Kd]
                 self.integral = 0.0

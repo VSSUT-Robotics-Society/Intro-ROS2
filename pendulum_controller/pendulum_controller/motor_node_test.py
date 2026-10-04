@@ -1,10 +1,13 @@
+import time
+
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64
-import time
 
 
-class TestMotorNode(Node):
+class MotorNodeTest(Node):
+    """Node class defining a smoke test for actuator commands."""
+
     def __init__(self):
         super().__init__('test_motor_node')
 
@@ -42,7 +45,7 @@ class TestMotorNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    test_motor_node = TestMotorNode()
+    test_motor_node = MotorNodeTest()
 
     try:
         # Run the test sequence directly

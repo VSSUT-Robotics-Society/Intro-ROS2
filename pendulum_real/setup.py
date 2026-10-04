@@ -1,5 +1,6 @@
-from setuptools import find_packages, setup
 import os
+
+from setuptools import find_packages, setup
 
 # Modify if your package name is different
 package_name = 'pendulum_real'

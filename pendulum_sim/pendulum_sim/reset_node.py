@@ -1,17 +1,19 @@
+import math
 import subprocess
+
+from geometry_msgs.msg import Pose
 import rclpy
 from rclpy.node import Node
-from ros_gz_interfaces.srv import ControlWorld
 from ros_gz_interfaces.msg import WorldControl, WorldReset
-from std_srvs.srv import Empty
-from geometry_msgs.msg import Pose
+from ros_gz_interfaces.srv import ControlWorld
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Bool
-
-import math
+from std_srvs.srv import Empty
 
 
 class ResetWorldNode(Node):
+    """Node class monitoring topic for reset commands."""
+
     def __init__(self):
         super().__init__('reset_world_node')
 
@@ -72,7 +74,7 @@ class ResetWorldNode(Node):
         # Check threshold condition
         if abs(current_val) > self.THRESHOLD:
             self.get_logger().warning(
-                f'Threshold exceeded! Value: {current_val:.2f} (Limit: {self.THRESHOLD}). Triggering reset...'
+                f'Threshold exceeded: {current_val:.2f} (Limit: {self.THRESHOLD}). Resetting...'
             )
             self.execute_reset_sequence()
 
@@ -107,10 +109,11 @@ class ResetWorldNode(Node):
     def reset_rviz_time(self):
         if self.rviz_reset_client.wait_for_service(timeout_sec=1.0):
             req = Empty.Request()
-            rviz_future = self.rviz_reset_client.call_async(req)
+            self.rviz_reset_client.call_async(req)
             self.get_logger().info('Triggered /rviz2/reset_time service.')
         else:
-            self.get_logger().warning('/rviz2/reset_time service not available, TF warnings may persist.')
+            self.get_logger().warning(
+                '/rviz2/reset_time service not available, TF warnings may persist.')
 
     def reset_done_callback(self, future):
         try:
@@ -142,9 +145,9 @@ class ResetWorldNode(Node):
         result = subprocess.run(cmd, capture_output=True, text=True)
 
         if result.returncode == 0:
-            self.get_logger().info(f"Successfully spawned '{entity_name}'.")
+            self.get_logger().info(f'Successfully spawned "{entity_name}".')
         else:
-            self.get_logger().error(f"Spawn failed: {result.stderr}")
+            self.get_logger().error(f'Spawn failed: {result.stderr}')
 
 
 def main(args=None):

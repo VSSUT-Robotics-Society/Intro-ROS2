@@ -1,5 +1,6 @@
-from setuptools import find_packages, setup
 import os
+
+from setuptools import find_packages, setup
 
 # Modify if your package name is different
 package_name = 'pendulum_controller'
@@ -7,7 +8,7 @@ package_name = 'pendulum_controller'
 package_dir = os.path.dirname(__file__)
 
 # folders under this package to include in data_files (relative to this package dir)
-selected_folders = ['launch']
+selected_folders = []
 
 # start with the existing static entries
 data_files = [
@@ -53,7 +54,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'test_motor_node = pendulum_controller.test_motor_node:main',
+            'test_motor_node = pendulum_controller.motor_node_test:main',
             'pid_controller_node = pendulum_controller.pid_controller:main',
         ],
     },

@@ -1,14 +1,16 @@
+import math
+import threading
+import time
+
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
-
-import time
-import math
 import serial
-import threading
 
 
 class EncoderNode(Node):
+    """Node class defining Input topic publishing arduino data."""
+
     def __init__(self):
         super().__init__('encoder_node')
 
@@ -20,13 +22,14 @@ class EncoderNode(Node):
         self.enc_ticks: list[int] = [0]*2  # [angX, angY]
 
         # Initialize Joint State
-        self.joint_msg = JointState()
+        self.joint_msg: JointState = JointState()
         self.joint_msg.name = ['base_joint']
         self.joint_msg.position = [0.0]
 
         # Initialize Serial Port
+        self.serial_port: str = '/dev/ttyACM0'
         try:
-            self.serial = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
+            self.serial = serial.Serial(self.serial_port, 115200, timeout=1)
             self.serial.flush()  # Clear buffer
 
             # Wait for Arduino to initialize
@@ -34,21 +37,21 @@ class EncoderNode(Node):
             while self.serial.read() != b'!':
                 if time.monotonic() - timer > 8:
                     self.get_logger().error(
-                        f'Failed to initialize serial port /dev/ttyACM0')
+                        f'Failed to initialize serial port {self.serial_port}')
                     self.destroy_node()
                     return
                 self.serial.write(b'?')
             self.serial.write(b'!')  # Acknowledge
             self.serial.flush()
             self.get_logger().info(
-                f'Serial port /dev/ttyACM0 opened successfully')
+                f'Serial port {self.serial_port} opened successfully')
 
             self.serial_thread = threading.Thread(target=self.serial_read)
             self.serial_thread.daemon = True
             self.serial_thread.start()
         except serial.SerialException as e:
             self.get_logger().warning(
-                f'Failed to open serial port /dev/ttyACM0: {e}')
+                f'Failed to open serial port {self.serial_port}: {e}')
             self.destroy_node()
 
     def serial_read(self):
