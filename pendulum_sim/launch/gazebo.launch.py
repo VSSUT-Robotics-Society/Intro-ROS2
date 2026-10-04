@@ -91,23 +91,23 @@ def generate_launch_description():
 
     # Optional: ROS2 Controller launch
     joint_state_broadcaster = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["joint_state_broadcaster"],
+        package='controller_manager',
+        executable='spawner',
+        arguments=['joint_state_broadcaster'],
     )
 
     effort_controller = Node(
-        package="controller_manager",
-        executable="spawner",
+        package='controller_manager',
+        executable='spawner',
         arguments=[
-            "effort_controller",
-            "--controller-ros-args",
-            "--ros-args --remap ~/commands:=/joint_control",
+            'effort_controller',
+            '--controller-ros-args',
+            '--ros-args --remap ~/commands:=/joint_control',
         ],
         parameters=[path.join(
             sim_pkg,
-            "config",
-            "gz_controller.yaml"
+            'config',
+            'gz_controller.yaml'
         )],
     )
 
