@@ -57,6 +57,7 @@ def generate_launch_description():
 
         output='screen',
         arguments=['-d', use_rviz_path],
+        parameters=[{'use_sim_time': use_sim_time}],
         condition=IfCondition(use_rviz)
     )
 

@@ -87,6 +87,13 @@ def generate_launch_description():
         # Note: extra_bridge_params can be added here if additional runtime params needed
     )
 
+    # Setup Reset Topic
+    reset_node = Node(
+        package='pendulum_sim',
+        executable='reset_node',
+        output='screen'
+    )
+
     # Launch!
     return LaunchDescription([
         # Arguments
@@ -97,4 +104,5 @@ def generate_launch_description():
         gz_sim_launch,
         spawn_entity,
         ros_gz_bridge,
+        reset_node
     ])

@@ -6,42 +6,59 @@ from sensor_msgs.msg import JointState
 from std_msgs.msg import Bool, Float64
 
 
+class PIDControl:
+    """Class defining a minimal PID controller."""
+
+    def __init__(self, K: list[float]) -> None:
+        self.K: list[float] = K  # PID gains [Kp, Ki, Kd]
+        self.integral: float = 0.0
+        self.prev_error: float = 0.0
+        self.integral_limit: float = 1.0  # Limit for integral term to prevent windup
+        self.first_value: bool = True   # Flags the first value
+
+    def compute_control(self, error, dt=1.0) -> float:
+        if self.first_value:
+            self.integral = 0.0     # Keep zero; risk of large dt spike here
+            derivative = 0.0    # Keep zero; we don't know what prev value was
+            self.first_value = False
+        else:
+            # Update integral term
+            self.integral += error * dt if dt > 0.0 else 0.0
+            # Limit the integral term to prevent windup
+            self.integral = max(-self.integral_limit,
+                                min(self.integral, self.integral_limit))
+            # Update derivative term
+            derivative = (error - self.prev_error) / \
+                dt if dt > 0.0 else 0.0
+
+        # Update previous error for next iteration
+        self.prev_error = error
+
+        # Return the PID control output
+        return (self.K[0] * error) + (self.K[1] * self.integral) + (self.K[2] * derivative)
+
+
 class PIDController(Node):
     """Node class wrapping a minimal PID controller."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('pid_controller')
 
-        # Global class for PID control
-        class PIDControl:
-            """Class defining a minimal PID controller."""
-
-            def __init__(self, K):
-                self.K = K  # PID gains [Kp, Ki, Kd]
-                self.integral = 0.0
-                self.prev_error = 0.0
-                self.integral_limit = 1.0  # Limit for integral term to prevent windup
-
-            def compute_control(self, error, dt=1.0) -> float:
-                # Update integral and derivative terms
-                self.integral += error * dt if dt > 0.0 else 0.0
-                # Limit the integral term to prevent windup
-                self.integral = max(-self.integral_limit,
-                                    min(self.integral, self.integral_limit))
-                derivative = (error - self.prev_error) / \
-                    dt if dt > 0.0 else 0.0
-
-                # Update previous error for next iteration
-                self.prev_error = error
-
-                # Return the PID control output
-                return (self.K[0] * error) + (self.K[1] * self.integral) + (self.K[2] * derivative)
+        # Encoder joint name
+        self.joint: str = 'pendulum_joint'
 
         # PID gains for the bob (pendulum)
-        self.bob = PIDControl(K=[1.2, 0.035, 50.0])  # Example gains for bob
+        self.bob: PIDControl = PIDControl(
+            K=[1.75, 0.04, 0.1])  # Example gains for bob
 
-        # Target setpoints for bob and rail
-        self.setPoint_bob = 0.0  # Desired position for bob (radians)
+        # Target setpoint(s)
+        self.setPoint_bob: float = 0.0  # Desired position for bob (radians)
+        self.prev_stamp: float = 0.0
+
+        # Input limit within which system stays on (+- <angle> degrees)
+        self.input_limit: float = 180.0  # degrees
+        self.input_debounce_limit: float = 30.0     # degrees
+        self._is_active: bool = True     # Flag stating whether system is active
 
         # Subscriber for joint states
         self.subscription = self.create_subscription(
@@ -57,7 +74,15 @@ class PIDController(Node):
             '/joint_control',
             10
         )
-        self.cmd = Float64()    # Message to publish control commands
+        self.cmd: Float64 = Float64()    # Message to publish control commands
+
+        # Publisher for reset commands
+        self.reset_pub = self.create_publisher(
+            Bool,
+            '/world/reset',
+            10
+        )
+        self.reset_cmd: Bool = Bool()   # Message to publish reset commands
 
         # Subscriber for reset commands
         self.reset_subscription = self.create_subscription(
@@ -69,16 +94,37 @@ class PIDController(Node):
 
     def topic_callback(self, msg: JointState):
         # Extract current positions
-        current_bob = msg.position[msg.name.index(
-            'base_joint')] if 'base_joint' in msg.name else 0.0
+        current_bob = msg.position[msg.name.index(  # type: ignore
+            self.joint)] if self.joint in msg.name else 0.0
         # Normalize the angle to be within [-pi, pi]
         current_bob = math.atan2(math.sin(current_bob), math.cos(current_bob))
+        # Normalize timestamps
+        current_stamp = msg.header.stamp.sec + msg.header.stamp.nanosec / 1e9
+        if not isinstance(current_stamp, float):
+            current_stamp = self.prev_stamp    # type checking failure
 
         # Calculate errors
         error_bob = self.setPoint_bob - current_bob
+        dt_bob = current_stamp - self.prev_stamp
+        self.prev_stamp = current_stamp  # update prev stamp or next iteration
+
+        # Limit checks
+        abs_bob_rad = math.degrees(abs(current_bob))
+        if not self._is_active:
+            if abs_bob_rad < self.input_debounce_limit:
+                self._is_active = True  # System has recovered within debounce limits
+        if abs_bob_rad > self.input_limit:
+            self.get_logger().warning(
+                f'Controller input exceeded limit +-{self.input_limit} degrees. Resetting...'
+            )
+            self._is_active = False     # System exceeded limits, shutdown
+            # !Reset simulation to upright (could also switch controllers here)
+            self.reset_cmd.data = True
+            self.reset_pub.publish(self.reset_cmd)
+            return
 
         # Calculate control outputs using PID
-        control_bob = self.bob.compute_control(error_bob)
+        control_bob = self.bob.compute_control(error=error_bob, dt=dt_bob)
 
         # Log the computed control outputs for debugging
         self.get_logger().info(
@@ -88,15 +134,16 @@ class PIDController(Node):
         self.cmd.data = control_bob
         self.publisher.publish(self.cmd)
 
-    def reset_callback(self, msg: Bool):
+    def reset_callback(self, msg: Bool) -> None:
         if msg.data:
             # Reset all PID states
             self.bob.integral = 0.0
             self.bob.prev_error = 0.0
+            self.bob.first_value = True
             self.get_logger().info('Reset command received. Cleared PID states')
 
 
-def main(args=None):
+def main(args=None) -> None:
     rclpy.init(args=args)
     node = PIDController()
 

@@ -53,7 +53,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'reset_world_node = pendulum_sim.reset_node:main'
+            'reset_node = pendulum_sim.reset_node:main'
         ],
     },
 )

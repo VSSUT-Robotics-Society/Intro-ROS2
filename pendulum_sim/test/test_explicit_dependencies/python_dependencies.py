@@ -9,7 +9,14 @@ import sys
 
 # Python distribution names that do not directly match their rosdep keys.
 PYTHON_DEPENDENCY_MAP: dict[str, str] = {
-    # 'pyserial': 'python3-serial',
+    'ament-index-python': 'ament_index_python',
+    'geometry-msgs': 'geometry_msgs',
+    'launch-ros': 'launch_ros',
+    'ros-gz-bridge': 'ros_gz_bridge',
+    'ros-gz-interfaces': 'ros_gz_interfaces',
+    'sensor-msgs': 'sensor_msgs',
+    'std-msgs': 'std_msgs',
+    'std-srvs': 'std_srvs',
     'pytest': 'python3-pytest',
 }
 

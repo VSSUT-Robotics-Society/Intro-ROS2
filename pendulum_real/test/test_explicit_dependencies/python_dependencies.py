@@ -9,6 +9,7 @@ import sys
 
 # Python distribution names that do not directly match their rosdep keys.
 PYTHON_DEPENDENCY_MAP: dict[str, str] = {
+    'sensor-msgs': 'sensor_msgs',
     'pyserial': 'python3-serial',
     'pytest': 'python3-pytest',
 }
