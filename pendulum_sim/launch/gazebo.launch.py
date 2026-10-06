@@ -62,15 +62,6 @@ def generate_launch_description():
         }.items()
     )
 
-    # Spawn the pendulum entity in Gazebo
-    spawn_entity = Node(
-        package='ros_gz_sim',
-        executable='create',
-        arguments=['-topic', '/robot_description',
-                   '-name', 'Pendulum'],
-        output='screen'
-    )
-
     # ros_gz_bridge for topic bridging between ROS and Gazebo
     # Source: https://github.com/gazebosim/ros_gz/tree/ros2/ros_gz_bridge
     ros_gz_bridge = RosGzBridge(
@@ -102,7 +93,6 @@ def generate_launch_description():
         # Actions
         desc_file,
         gz_sim_launch,
-        spawn_entity,
         ros_gz_bridge,
         reset_node
     ])
