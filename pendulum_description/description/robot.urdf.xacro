@@ -45,8 +45,8 @@
 
   <joint name="base_joint" type="fixed">
     <parent link="base_link" />
-    <child link="holder_link" />
-    <origin xyz="0 0 0.05" rpy="0 0 0" />
+    <child link="base_rod" />
+    <origin xyz="0 0 0" rpy="0 0 ${pi}" />
   </joint>
 
   <link name="base_rod">
@@ -107,6 +107,7 @@
     <parent link="motor_link" />
     <child link="shaft_link" />
     <origin xyz="0 0 ${(actuator_height + 0.015)/2}" rpy="0 ${pi/2} 0" />
+    <dynamics damping="1e-5" friction="0.035" />
   </joint>
 
   <link name="shaft_link">
@@ -209,7 +210,7 @@
       </geometry>
     </collision>
 
-    <xacro:inertial_box mass="0.785" x="0.05" y="0.05" z="0.05">
+    <xacro:inertial_box mass="${pendulum_mass + bob_mass}" x="0.05" y="0.05" z="0.05">
       <origin xyz="0 0 0" />
     </xacro:inertial_box>
   </link>
