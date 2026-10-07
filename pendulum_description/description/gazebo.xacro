@@ -14,7 +14,7 @@
       filename="gz-sim-apply-joint-force-system"
       name="gz::sim::systems::ApplyJointForce">
       <topic>joint_control</topic>
-      <joint_name>pendulum_joint</joint_name>
+      <joint_name>shaft_joint</joint_name>
     </plugin>
 
   </gazebo>
